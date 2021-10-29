@@ -6,7 +6,7 @@ Ronneberger et al is not implemented. Modern variation of Unet which has same se
 * [x] Unet (Modern Variation)
 * [x] Attention UNET
 * [ ] Residual Unet
-  * [ ] Residual Block
+  * [x] Residual Block
 * [ ] Residual Attention Unet
 * [ ] Recurrent Residual Unet
 * [ ] Recurrent Residual Attention Unet
