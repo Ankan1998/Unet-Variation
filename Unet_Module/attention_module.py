@@ -27,7 +27,7 @@ class UnetAttentionModule(nn.Module):
 
 if __name__ == "__main__":
     unetAttention = UnetAttentionModule(64, 128)
-    g = torch.rand(4, 64, 64, 64)
+    g = torch.rand(4, 64, 128, 128)
     x = torch.rand(4, 128, 128, 128)
     res = unetAttention(g,x)
     print(res.size())
