@@ -14,15 +14,12 @@ class AttentionUNet(nn.Module):
         self.downConvBock1 = DownConvolution(64, 128)
         self.downConvBock2 = DownConvolution(128, 256)
         self.downConvBock3 = DownConvolution(256, 512)
-        self.midMaxpool = nn.MaxPool2d(2, 2)
-        self.attnBlock1 = UnetAttentionModule(512,512)
-        self.attnBlock2 = UnetAttentionModule(256, 256)
-        self.attnBlock3 = UnetAttentionModule(128, 128)
-        self.attnBlock4 = UnetAttentionModule(64, 64)
-        self.upConvBlock0 = UpConvolution(512, 1024)
-        self.upConvBlock1 = UpConvolution(1024, 512)
-        self.upConvBlock2 = UpConvolution(512, 256)
-        self.upConvBlock3 = UpConvolution(256, 128)
+        self.attnBlock1 = UnetAttentionModule(512,256)
+        self.attnBlock2 = UnetAttentionModule(256, 128)
+        self.attnBlock3 = UnetAttentionModule(128, 64)
+        self.upConvBlock0 = UpConvolution(512, 512)
+        self.upConvBlock1 = UpConvolution(512, 256)
+        self.upConvBlock2 = UpConvolution(256, 128)
         self.lastConv = LastConvolution(128, 64, num_classes)
 
     def forward(self, x):
@@ -30,20 +27,16 @@ class AttentionUNet(nn.Module):
         x_2 = self.downConvBock1(x_1)  # attn_x_2
         x_3 = self.downConvBock2(x_2)  # attn_x_3
         x_4 = self.downConvBock3(x_3)  # attn_x_4
-        x_5 = self.midMaxpool(x_4)
-        x_6 = self.upConvBlock0(x_5)
-        x_4_attention = self.attnBlock1(x_6,x_4)
-        concat_x_4_6 = torch.cat((x_4_attention, x_6), 1)
+        x_6 = self.upConvBlock0(x_4)
+        x_3_4_attention = self.attnBlock1(x_4,x_3)
+        concat_x_4_6 = torch.cat((x_3_4_attention, x_6), 1)
         x_7 = self.upConvBlock1(concat_x_4_6)
-        x_3_attention = self.attnBlock2(x_7, x_3)
+        x_3_attention = self.attnBlock2(x_3, x_7)
         concat_x_3_7 = torch.cat((x_3_attention, x_7), 1)
         x_8 = self.upConvBlock2(concat_x_3_7)
-        x_2_attention = self.attnBlock3(x_8, x_2)
+        x_2_attention = self.attnBlock3(x_2, x_8)
         concat_x_2_8 = torch.cat((x_2_attention, x_8), 1)
-        x_9 = self.upConvBlock3(concat_x_2_8)
-        x_1_attention = self.attnBlock4(x_9, x_1)
-        concat_x_1_9 = torch.cat((x_1_attention, x_9), 1)
-        out = self.lastConv(concat_x_1_9)
+        out = self.lastConv(concat_x_2_8)
 
         return out
 
